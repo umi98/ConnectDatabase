@@ -131,8 +131,8 @@ class Program
     }
 
 
-    // See if id is exist
-    public static bool GetById(int id) // bool used to be void
+    // Get by Id, not used, but just in case
+    public static void GetRecordById(int id)
     {
         connection = new SqlConnection(ConnectionString);
 
@@ -148,21 +148,46 @@ class Program
 
         if (reader.HasRows)
         {
-            /*while (reader.Read())
+            while (reader.Read())
             {
                 Console.WriteLine("Id: " + reader[0]);
                 Console.WriteLine("Name: " + reader[1]);
                 Console.WriteLine("Code: " + reader[2]);
                 Console.WriteLine("-------------------");
-            }*/
+            }
+        }
+        else
+        {
+            Console.WriteLine("Data not found!");
+        }
+        Console.ReadKey();
+        reader.Close();
+        connection.Close();
+    }
+
+    // See if id is exist
+    public static bool GetById(int id)
+    {
+        connection = new SqlConnection(ConnectionString);
+
+        SqlCommand command = new SqlCommand();
+        command.Connection = connection;
+        command.CommandText = "SELECT * FROM region where id = @id";
+        command.Parameters.Add("@id", SqlDbType.Int);
+        command.Parameters["@id"].Value = id;
+
+        connection.Open();
+
+        SqlDataReader reader = command.ExecuteReader();
+
+        if (reader.HasRows)
+        {
             return true;
         }
         else
         {
-            /*Console.WriteLine("Data not found!");*/
             return false;
         }
-        //Console.ReadKey();
         //reader.Close();
         connection.Close();
     }
