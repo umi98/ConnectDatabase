@@ -7,18 +7,22 @@ using System.Xml.Linq;
 
 class Program
 {
+    // Dua baris perintah berikut untuk melakukan konektivitas database
     static string ConnectionString = "Data Source=DESKTOP-IBME24N;Initial Catalog=db_hr_sibkm;Integrated Security=True;Connect Timeout=30;";
     static SqlConnection connection;
 
     private static void Main(string[] args)
     {
+        // Deklarasi variabel di awal
         bool endApp = false;
         bool iid;
         string opsi, key, name, code = "";
         int id;
 
+        // Mengulang program hingga endApp bernilai true
         while (!endApp)
         {
+            Console.Clear();
             Console.WriteLine("Choose option:");
             Console.WriteLine("1. See all data in table region");
             Console.WriteLine("2. Search region");
@@ -29,19 +33,23 @@ class Program
             Console.Write("Your option? ");
             opsi = Console.ReadLine();
 
+            // Pemilihan menu
             switch (opsi)
             {
                 case "1":
+                    Console.Clear();
                     Console.WriteLine("List of region\n");
                     GetAllRegion();
                     break;
                 case "2":
+                    Console.Clear();
                     Console.WriteLine("Search region\n");
                     Console.Write("Keyword: ");
                     key = Console.ReadLine();
                     GetByString(key);
                     break;
                 case "3":
+                    Console.Clear();
                     Console.WriteLine("Add new region\n");
                     Console.Write("Name: ");
                     name = Console.ReadLine();
@@ -50,8 +58,10 @@ class Program
                     InsertRegion(name, code);
                     break;
                 case "4":
+                    Console.Clear();
                     Console.WriteLine("Edit region\n");
                     Console.Write("Id: ");
+                    // id pada tabel region adalah integer, perlu dicek jika tipe data yg dimasukkan benar
                     iid = int.TryParse(Console.ReadLine(), out id);
                     if (GetById(id))
                     {
@@ -68,8 +78,10 @@ class Program
                     Console.ReadKey();
                     break;
                 case "5":
+                    Console.Clear();
                     Console.WriteLine("Delete a region\n");
                     Console.Write("Id: ");
+                    // id pada tabel region adalah integer, perlu dicek jika tipe data yg dimasukkan benar
                     iid = int.TryParse(Console.ReadLine(), out id);
                     if (GetById(id))
                     {
@@ -103,6 +115,7 @@ class Program
     {
         connection = new SqlConnection(ConnectionString);
         
+        // SQL command untuk menampilkan semua data
         SqlCommand command = new SqlCommand();
         command.Connection = connection;
         command.CommandText = "SELECT * FROM region";
@@ -111,6 +124,7 @@ class Program
 
         SqlDataReader reader = command.ExecuteReader();
 
+        // Tampilkan data jika hasilnya ditemukan, dan respon jika tidak ada data
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -136,9 +150,11 @@ class Program
     {
         connection = new SqlConnection(ConnectionString);
 
+        // Melakukan SQL query untuk mencari id
         SqlCommand command = new SqlCommand();
         command.Connection = connection;
         command.CommandText = "SELECT * FROM region where id = @id";
+        // Tambah parameter
         command.Parameters.Add("@id", SqlDbType.Int);
         command.Parameters["@id"].Value = id;
 
@@ -146,6 +162,7 @@ class Program
 
         SqlDataReader reader = command.ExecuteReader();
 
+        // Tampilkan data jika ditemukan dan respon jika tidak ada data
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -170,6 +187,7 @@ class Program
     {
         connection = new SqlConnection(ConnectionString);
 
+        // Query untuk mencari berdasarkan id
         SqlCommand command = new SqlCommand();
         command.Connection = connection;
         command.CommandText = "SELECT * FROM region where id = @id";
@@ -180,6 +198,7 @@ class Program
 
         SqlDataReader reader = command.ExecuteReader();
 
+        // Jika ditemukan kembalikan nilai true, jika tidak kembalikan nilai false
         if (reader.HasRows)
         {
             return true;
@@ -197,6 +216,7 @@ class Program
     {
         connection = new SqlConnection(ConnectionString);
 
+        // Query untuk melakukan pencarian berdasarkan nama atau code
         SqlCommand command = new SqlCommand();
         command.Connection = connection;
         command.CommandText = "SELECT * FROM region WHERE name = @search OR code = @search";
@@ -207,6 +227,7 @@ class Program
 
         SqlDataReader reader = command.ExecuteReader();
 
+        // Tampilkan data jika ditemukan dan respon jika tidak ada data
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -233,6 +254,7 @@ class Program
 
         connection.Open();
 
+        // Melakukan penerapan rollback jika terjadi kesalahan
         SqlTransaction transaction = connection.BeginTransaction(); // open connection before use this
 
         try
@@ -248,7 +270,7 @@ class Program
             command.Parameters["@code"].Value = code;
 
             int result = command.ExecuteNonQuery();
-            transaction.Commit();
+            transaction.Commit(); // Titik data dipulihkan ketika rollback dilaksanakan.
 
             if (result > 0)
             {
@@ -284,6 +306,7 @@ class Program
 
         connection.Open();
 
+        // Menerapkan operasi untuk rollback jika terjadi kesalahan
         SqlTransaction transaction = connection.BeginTransaction(); // open connection before use this
 
         try
@@ -301,7 +324,7 @@ class Program
             command.Parameters["@code"].Value = code;
 
             int result = command.ExecuteNonQuery();
-            transaction.Commit();
+            transaction.Commit(); // Titik data dipulihkan ketika rollback dilaksanakan.
 
             if (result > 0)
             {
@@ -349,7 +372,7 @@ class Program
             command.Parameters["@id"].Value = id;
 
             int result = command.ExecuteNonQuery();
-            transaction.Commit();
+            transaction.Commit(); // Titik data dipulihkan ketika rollback dilaksanakan.
 
             if (result > 0)
             {
